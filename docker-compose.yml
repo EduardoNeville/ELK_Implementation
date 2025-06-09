@@ -1,0 +1,43 @@
+services:
+  elasticsearch:
+    image: custom-elasticsearch:7.17.3
+    user: "1000:1000"
+    environment:
+      - discovery.type=single-node
+    ports:
+      - 9200:9200
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - elk-network
+
+  kibana:
+    image: kibana:7.17.3
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    #volumes:
+    #  - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - elk-network
+
+  shipper:
+    image: docker.elastic.co/beats/filebeat:8.14.0
+    user: root
+    volumes:
+      - /home/eduardoneville/Desktop/UNI/:/tmp:ro
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - elk-network
+
+networks:
+  elk-network:
+    driver: bridge
