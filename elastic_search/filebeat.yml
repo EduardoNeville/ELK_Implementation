@@ -1,0 +1,13 @@
+filebeat.inputs:
+- type: container
+  paths:
+    - '/tmp/*/*.pdf'
+
+processors:
+- add_docker_metadata:
+    host: "unix:///var/run/docker.sock"
+
+output.elasticsearch:
+  hosts: elasticsearch:9200
+  indices:
+    - index: "university-pdfs"

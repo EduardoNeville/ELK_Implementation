@@ -1,0 +1,63 @@
+services:
+  opensearch:
+    image: opensearchproject/opensearch:2.17.1
+    container_name: opensearch
+    environment:
+      - cluster.name=opensearch-cluster
+      - node.name=opensearch-node
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - plugins.security.disabled=false
+      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=Respvblica.118"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - opensearch-net
+    command: >
+      bash -c "
+      if [ ! -d /usr/share/opensearch/plugins/ingest-attachment ]; then
+        /usr/share/opensearch/bin/opensearch-plugin install --batch ingest-attachment
+      fi &&
+      /usr/share/opensearch/opensearch-docker-entrypoint.sh
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:2.17.1
+    container_name: opensearch-dashboards
+    environment:
+      - OPENSEARCH_HOSTS=["https://opensearch:9200"]
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=false
+    ports:
+      - 5601:5601
+    depends_on:
+      - opensearch
+    networks:
+      - opensearch-net
+  tika:
+    image: apache/tika:latest
+    container_name: tika-server
+    ports:
+      - 9998:9998
+    networks:
+      - opensearch-net
+    depends_on:
+      opensearch:
+        condition: service_healthy
+
+volumes:
+  opensearch-data:
+
+networks:
+  opensearch-net:
+    driver: bridge

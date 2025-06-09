@@ -1,16 +1,9 @@
 # ElasticSearch & OpenSearch
 
-While they are very useful. Their true power comes when the data is structured.
+Structuring the PDFs and the data itself can be very useful as they can then be searched through.
 
-Think about network logs, structured databases, etc...
+The steps we would have to take are of indexing the data properly for ElasticSearch/OpenSearch to 
+work and then use tools like nucleo and pdfviewers to display the information. The link with confluence 
+is very strong and can be used to develop a deeper understanding of who is working on what? What have they done?
+What files have been used or edited, etc...
 
-In the case of unstructured data like a PDF or a Powerpoint. It might struggle.
-
-That is why using LlamaIndex to process the PDF's / Powerpoints into structured 
-data would be very useful because the Vector Database that is created can then be 
-searched using OpenSearch or ElasticSearch.
-
-The Vector Database can have information about all elements that have been used 
-or talked about. Using ontologies or plain PDF to Text storage methods, this removes 
-the unstructured nature of PDFs and organized in a way that we can leverage the utility
-of ElasticSearch or OpenSearch.
